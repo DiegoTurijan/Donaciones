@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Donación</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts for an elegant look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- QR Code generation library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        /* Custom styles for the page */
+        body {
+            font-family: 'Lato', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e3a8a, #3b82f6);
+        }
+
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* The main ticket container styling */
+        .ticket-container {
+            position: relative;
+            width: 100%; /* Make width responsive */
+            max-width: 320px; /* Set a max-width for larger screens */
+            aspect-ratio: 80 / 125; /* Maintain aspect ratio */
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
+            transition: transform 0.3s ease;
+        }
+
+        .ticket-container:hover {
+            transform: scale(1.03);
+        }
+
+        .ticket-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Water filling animation */
+        .water-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #3b82f6; /* Water color */
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            height: 0; /* Initial height is 0 */
+            transition: height 1.5s cubic-bezier(0.25, 1, 0.5, 1); /* Smooth transition */
+            clip-path: url(#ticket-clip);
+            overflow: hidden;
+        }
+
+        .water-fill::before,
+        .water-fill::after {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 45%;
+            left: -50%;
+            top: -10px;
+            animation: wave 5s linear infinite;
+        }
+
+        .water-fill::after {
+            border-radius: 40%;
+            background-color: rgba(255, 255, 255, 0.3);
+            animation: wave 7s linear infinite;
+            animation-delay: -3s;
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Content inside the ticket */
+        .ticket-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10%; /* Use percentage for padding */
+            color: white;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        
+        /* Dashed line separator */
+        .separator {
+            width: 80%;
+            border-top: 2px dashed rgba(255, 255, 255, 0.5);
+            margin: 20px 0;
+        }
+
+        /* Modal styling */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 50;
+        }
+
+        .modal-backdrop.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Final thank you ticket styling */
+        .final-ticket {
+            background: #f1f5f9;
+            color: #1e293b;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 350px;
+            position: relative;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: scale(0.9);
+            transition: transform 0.4s ease;
+        }
+        
+        .modal-backdrop.active .final-ticket {
+            transform: scale(1);
+        }
+
+        .final-ticket::before,
+        .final-ticket::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #1e3a8a;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .final-ticket::before { left: -10px; }
+        .final-ticket::after { right: -10px; }
+        
+        #qr-code {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px;
+            margin-top: 1rem;
+        }
+
+    </style>
+</head>
+<body class="min-h-screen w-full flex flex-col items-center justify-center p-4 text-white">
+
+    <main class="w-full max-w-md flex flex-col items-center justify-center text-center space-y-6">
+        <!-- Main Progress Ticket -->
+        <h1 class="text-4xl sm:text-5xl font-bold">Únete a la Causa</h1>
+        <p class="text-base sm:text-lg text-slate-300">Tu donación nos ayuda a alcanzar nuestra meta y hacer una diferencia real.</p>
+        
+        <div class="ticket-container">
+            <!-- SVG for the ticket shape and clip-path -->
+            <svg class="ticket-svg" viewBox="0 0 80 125">
+                <defs>
+                    <clipPath id="ticket-clip">
+                        <path d="M10,0 H70 C75.5,0 80,4.5 80,10 V115 C80,120.5 75.5,125 70,125 H10 C4.5,125 0,120.5 0,115 V10 C0,4.5 4.5,0 10,0 Z M40,55 A5,5 0 0,0 40,65 A5,5 0 0,0 40,55 M0,60 H10 M70,60 H80" />
+                    </clipPath>
+                </defs>
+                <path d="M10,0 H70 C75.5,0 80,4.5 80,10 V55 A5,5 0 0,1 70,60 H10 A5,5 0 0,1 10,55 V10 C0,4.5 4.5,0 10,0 Z" fill="#1e293b" fill-opacity="0.8"/>
+                <path d="M10,65 H70 A5,5 0 0,1 70,70 V115 C80,120.5 75.5,125 70,125 H10 C4.5,125 0,120.5 0,115 V70 A5,5 0 0,1 10,65 Z" fill="#1e293b" fill-opacity="0.8"/>
+            </svg>
+
+            <!-- Animated Water Fill -->
+            <div id="water-fill" class="water-fill"></div>
+
+            <!-- Content Displayed over the ticket -->
+            <div class="ticket-content">
+                <div class="flex flex-col items-center h-1/2 justify-center">
+                    <h2 class="text-5xl sm:text-6xl font-bold" id="percentage-display">0%</h2>
+                    <p class="text-slate-300">alcanzado</p>
+                </div>
+                <div class="separator"></div>
+                <div class="flex flex-col items-center h-1/2 justify-center">
+                    <p class="text-slate-300">Meta</p>
+                    <h3 class="text-3xl sm:text-4xl font-bold">$400</h3>
+                    <p class="mt-2 text-sm text-slate-300">Donado: <span id="donated-amount">$0</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Donate Button -->
+        <button id="donate-btn" class="bg-amber-400 text-slate-900 font-bold py-3 px-8 rounded-lg text-lg shadow-lg hover:bg-amber-300 transition-all transform hover:scale-105 active:scale-95">
+            Donar Ahora
+        </button>
+    </main>
+
+    <!-- Donation Form Modal -->
+    <div id="donation-modal" class="modal-backdrop">
+        <div class="bg-slate-800 p-8 rounded-xl shadow-2xl w-11/12 max-w-sm flex flex-col space-y-6 relative">
+             <button id="close-donation-modal" class="absolute top-3 right-3 text-slate-400 hover:text-white text-3xl leading-none">&times;</button>
+            <h2 class="text-2xl text-center text-white">Realizar una Donación</h2>
+            <form id="donation-form" class="flex flex-col space-y-4">
+                <div>
+                    <label for="donator-name" class="text-sm text-slate-400">Tu Nombre</label>
+                    <input type="text" id="donator-name" required placeholder="Ej: Juan Pérez" class="w-full bg-slate-700 text-white p-3 rounded-md border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="donation-amount" class="text-sm text-slate-400">Cantidad (USD)</label>
+                    <input type="number" id="donation-amount" required placeholder="Ej: 50" min="1" class="w-full bg-slate-700 text-white p-3 rounded-md border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <button type="submit" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-500 transition-colors active:scale-95">
+                    Confirmar Donación
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Thank You Ticket Modal -->
+    <div id="ticket-modal" class="modal-backdrop">
+        <div class="final-ticket text-center">
+            <button id="close-ticket-modal" class="absolute top-3 right-4 text-slate-500 hover:text-slate-900 text-3xl font-bold leading-none">&times;</button>
+            <h2 class="text-3xl font-bold text-blue-800">¡Gracias!</h2>
+            <p class="text-slate-600 mt-2">Agradecemos enormemente tu generosa donación.</p>
+            <div class="w-full border-t-2 border-dashed border-slate-300 my-6"></div>
+            <div>
+                <p class="text-sm text-slate-500">DONANTE</p>
+                <p id="ticket-donator-name" class="text-xl font-bold text-slate-800">Juan Pérez</p>
+            </div>
+            <div id="qr-code">
+                 <!-- QR Code will be generated here -->
+            </div>
+            <p class="text-xs text-slate-400 mt-2">Escanea para ver tu mensaje de agradecimiento</p>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const donateBtn = document.getElementById('donate-btn');
+        const donationModal = document.getElementById('donation-modal');
+        const closeDonationModalBtn = document.getElementById('close-donation-modal');
+        const donationForm = document.getElementById('donation-form');
+        const ticketModal = document.getElementById('ticket-modal');
+        const closeTicketModalBtn = document.getElementById('close-ticket-modal');
+        
+        const percentageDisplay = document.getElementById('percentage-display');
+        const donatedAmountDisplay = document.getElementById('donated-amount');
+        const waterFill = document.getElementById('water-fill');
+        
+        const ticketDonatorName = document.getElementById('ticket-donator-name');
+        const qrCodeContainer = document.getElementById('qr-code');
+
+        // --- State ---
+        let totalDonated = 0;
+        const goalAmount = 400;
+        let qrCodeInstance = null; // To hold the QRCode object
+
+        // --- Functions ---
+
+        /**
+         * Updates the visual progress on the main ticket.
+         */
+        function updateProgress() {
+            const percentage = Math.min((totalDonated / goalAmount) * 100, 100);
+            
+            percentageDisplay.textContent = `${Math.floor(percentage)}%`;
+            donatedAmountDisplay.textContent = `$${totalDonated}`;
+            waterFill.style.height = `${percentage}%`;
+        }
+
+        /**
+         * Generates the thank you ticket with QR code.
+         * @param {string} name - The donor's name.
+         * @param {number} amount - The donation amount.
+         */
+        function generateThankYouTicket(name, amount) {
+            ticketDonatorName.textContent = name;
+            qrCodeContainer.innerHTML = '';
+
+            const thankYouMessage = `¡Gracias por tu generosa donación de $${amount}, ${name}! Tu apoyo significa mucho para nosotros.`;
+            qrCodeInstance = new QRCode(qrCodeContainer, {
+                text: thankYouMessage,
+                width: 128,
+                height: 128,
+                colorDark: "#1e293b",
+                colorLight: "#f1f5f9",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            ticketModal.classList.add('active');
+        }
+
+        // --- Event Listeners ---
+
+        // Open/close modals
+        donateBtn.addEventListener('click', () => donationModal.classList.add('active'));
+        closeDonationModalBtn.addEventListener('click', () => donationModal.classList.remove('active'));
+        closeTicketModalBtn.addEventListener('click', () => ticketModal.classList.remove('active'));
+        
+        // Allow closing the donation form by clicking the backdrop
+        donationModal.addEventListener('click', (e) => {
+            if (e.target === donationModal) {
+                donationModal.classList.remove('active');
+            }
+        });
+        
+        // NOTE: We have intentionally removed the backdrop click listener for the ticketModal
+        // to prevent it from closing accidentally. The user must click the 'X' button.
+
+        // Handle donation form submission
+        donationForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nameInput = document.getElementById('donator-name');
+            const amountInput = document.getElementById('donation-amount');
+            const name = nameInput.value.trim();
+            const amount = parseFloat(amountInput.value);
+
+            if (name && amount > 0) {
+                totalDonated += amount;
+                updateProgress();
+                generateThankYouTicket(name, amount);
+                donationForm.reset();
+                donationModal.classList.remove('active');
+            }
+        });
+        
+        // Initial setup
+        updateProgress();
+    </script>
+</body>
+</html>
+
+  
