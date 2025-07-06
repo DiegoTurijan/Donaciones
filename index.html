@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Muro de Bloques - Red Social</title>
     
     <!-- Tailwind CSS -->
@@ -18,29 +18,15 @@
 
     <style>
         /* Estilos personalizados */
-        html, body {
-            overscroll-behavior: none;
-            overflow: hidden;
+        html {
             font-family: 'Inter', sans-serif;
-            height: 100%;
-            margin: 0;
-            padding: 0;
+            /* ✅ Evita el scroll horizontal, pero permite el vertical */
+            overflow-x: hidden;
         }
-
-        /* Contenedor principal de la app */
-        #app-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            background-color: #1f2937; /* bg-gray-800 */
-        }
-
-        #app {
-            flex: 1;
-            overflow: hidden;
-            display: flex;
-            position: relative;
+        
+        body {
+             /* Previene el rebote de scroll en algunos dispositivos */
+            overscroll-behavior-y: contain;
         }
 
         /* Estilo para los bloques de comentarios */
@@ -56,7 +42,7 @@
             gap: 6px;
             min-width: 160px;
             max-width: 200px;
-            touch-action: none;
+            touch-action: none; /* Mejora la experiencia táctil */
         }
 
         .comment-block:active {
@@ -108,124 +94,77 @@
             to { opacity: 0; transform: scale(0.95); }
         }
         
-        /* Estilos para la barra lateral */
+        /* Estilos para la barra lateral en móviles */
         #sidebar {
-            position: absolute;
-            z-index: 40;
-            width: 16rem; /* 64 */
-            height: 100%;
-            background-color: white;
-            border-right: 1px solid #e5e7eb;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            transform: translateX(-100%);
             transition: transform 0.3s ease-in-out;
         }
-
-        .sidebar-visible {
-            transform: translateX(0);
-        }
-
-        /* Mural container */
-        #mural-container {
-            flex: 1;
-            overflow: auto;
-            position: relative;
-            background-color: #e5e7eb;
-        }
-
-        /* Footer */
-        footer {
-            flex-shrink: 0;
-            background-color: white;
-            padding: 0.75rem;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        /* Header */
-        header {
-            flex-shrink: 0;
-            background-color: white;
-            padding: 0.75rem;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        /* Media queries para desktop */
-        @media (min-width: 768px) {
-            #app-container {
-                max-width: 64rem; /* 1024px */
-                margin: 1rem auto;
-                border-radius: 0.75rem;
-                height: calc(100% - 2rem);
-            }
-            
-            #sidebar {
-                position: relative;
-                transform: translateX(0);
-            }
+        .sidebar-hidden {
+            transform: translateX(-100%);
         }
     </style>
 </head>
-<body class="bg-gray-800">
-    <!-- Contenedor principal -->
-    <div id="app-container">
-        <div id="app">
-            <!-- Barra lateral de perfiles -->
-            <aside id="sidebar" class="dark:bg-gray-800 dark:border-gray-700">
-                <div class="flex justify-between items-center">
-                    <h1 class="text-xl font-bold text-blue-600 dark:text-blue-500 flex items-center gap-2">
-                        <i class="fas fa-cubes"></i> MuroDeBloques
-                    </h1>
-                    <button id="close-sidebar-btn" class="md:hidden text-2xl">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <h2 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-6 mb-3">Perfiles</h2>
-                <div id="profiles-list" class="flex flex-col gap-2 overflow-y-auto flex-grow">
-                    <!-- Los perfiles se insertarán aquí dinámicamente -->
-                </div>
-                <div id="main-user-stats" class="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
-                     <!-- Las estadísticas del usuario principal se insertarán aquí -->
-                </div>
-            </aside>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
 
-            <!-- Contenido principal -->
-            <div class="flex-1 flex flex-col h-full overflow-hidden">
-                <header class="dark:bg-gray-800 dark:border-gray-700">
-                    <div class="flex items-center gap-3">
-                        <button id="open-sidebar-btn" class="md:hidden text-xl p-2">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                        <div id="current-profile-header">
-                            <!-- El encabezado del perfil actual se insertará aquí -->
-                        </div>
-                    </div>
-                    <button id="buy-blocks-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 rounded-lg flex items-center gap-2 transition-transform duration-200 hover:scale-105 text-sm">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="hidden sm:inline">Comprar</span>
-                    </button>
-                </header>
+    <!-- ✅ Contenedor principal que puede crecer verticalmente -->
+    <div id="app" class="flex w-full relative min-h-screen">
 
-                <div id="mural-container" class="dark:bg-gray-900/50">
-                    <!-- Los bloques de comentarios se insertarán aquí -->
-                </div>
-
-                <footer class="dark:bg-gray-800 dark:border-gray-700">
-                    <div class="mb-2">
-                         <label for="comment-input" class="text-sm font-medium text-gray-700 dark:text-gray-300">Deja tu huella en el muro:</label>
-                    </div>
-                    <form id="add-comment-form" class="flex items-stretch gap-2">
-                        <img id="form-user-avatar" src="" class="w-10 h-10 rounded-full self-center" alt="Tu avatar">
-                        <textarea id="comment-input" placeholder="Escribe tu comentario aquí..." rows="1" class="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"></textarea>
-                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold px-4 rounded-lg flex items-center justify-center gap-2 transition-colors">
-                            <i class="fas fa-plus-circle"></i>
-                            <span class="hidden sm:inline">Añadir</span>
-                        </button>
-                    </form>
-                </footer>
+        <!-- Barra lateral de perfiles (adaptable) -->
+        <aside id="sidebar" class="fixed md:sticky top-0 z-40 w-64 h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4 flex-col sidebar-hidden md:flex md:transform-none">
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl font-bold text-blue-600 dark:text-blue-500 flex items-center gap-2">
+                    <i class="fas fa-cubes"></i> MuroDeBloques
+                </h1>
+                <button id="close-sidebar-btn" class="md:hidden text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-        </div>
+            <h2 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-6 mb-3">Perfiles</h2>
+            <div id="profiles-list" class="flex flex-col gap-2 overflow-y-auto flex-grow">
+                <!-- Los perfiles se insertarán aquí dinámicamente -->
+            </div>
+            <div id="main-user-stats" class="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
+                 <!-- Las estadísticas del usuario principal se insertarán aquí -->
+            </div>
+        </aside>
+
+        <!-- Contenido principal (Mural) -->
+        <main class="flex-1 flex flex-col max-h-screen">
+            <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-3 flex justify-between items-center shadow-sm sticky top-0 z-10">
+                <div class="flex items-center gap-3">
+                    <button id="open-sidebar-btn" class="md:hidden text-xl p-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div id="current-profile-header">
+                        <!-- El encabezado del perfil actual se insertará aquí -->
+                    </div>
+                </div>
+                <button id="buy-blocks-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 rounded-lg flex items-center gap-2 transition-transform duration-200 hover:scale-105 text-sm">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="hidden sm:inline">Comprar</span>
+                </button>
+            </header>
+
+             <!-- ✅ Contenedor del mural que permite scroll interno -->
+            <div id="mural-container" class="flex-1 bg-gray-200 dark:bg-gray-900/50 overflow-auto relative">
+                <!-- Los bloques de comentarios se insertarán aquí -->
+            </div>
+
+            <!-- Pie de página para añadir bloques -->
+            <footer class="bg-white dark:bg-gray-800 p-3 border-t border-gray-200 dark:border-gray-700 shadow-inner">
+                <div class="mb-2">
+                     <label for="comment-input" class="text-sm font-medium text-gray-700 dark:text-gray-300">Deja tu huella en el muro:</label>
+                </div>
+                <form id="add-comment-form" class="flex items-stretch gap-2">
+                    <img id="form-user-avatar" src="" class="w-10 h-10 rounded-full self-center" alt="Tu avatar">
+                    <textarea id="comment-input" placeholder="Escribe tu comentario aquí..." rows="1" class="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"></textarea>
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold px-4 rounded-lg flex items-center justify-center gap-2 transition-colors">
+                        <i class="fas fa-plus-circle"></i>
+                        <span class="hidden sm:inline">Añadir</span>
+                    </button>
+                </form>
+            </footer>
+        </main>
+
     </div>
     
     <!-- Overlay para la barra lateral en móvil -->
@@ -234,7 +173,25 @@
     <!-- Modal para comprar bloques -->
     <div id="buy-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden p-4">
         <div id="modal-content" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
-            <!-- Contenido del modal -->
+            <h2 class="text-2xl font-bold mb-4">Tienda de Bloques</h2>
+            <p class="text-gray-600 dark:text-gray-300 mb-6">Usa tus puntos para comprar más bloques y seguir comentando.</p>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center p-4 border dark:border-gray-600 rounded-lg">
+                    <div>
+                        <p class="font-semibold">Paquete de 5 Bloques</p>
+                        <p class="text-sm text-green-500 font-bold">Costo: 100 Puntos</p>
+                    </div>
+                    <button onclick="buyBlocks(5, 100)" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Comprar</button>
+                </div>
+                 <div class="flex justify-between items-center p-4 border dark:border-gray-600 rounded-lg">
+                    <div>
+                        <p class="font-semibold">Paquete de 15 Bloques</p>
+                        <p class="text-sm text-green-500 font-bold">Costo: 250 Puntos</p>
+                    </div>
+                    <button onclick="buyBlocks(15, 250)" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Comprar</button>
+                </div>
+            </div>
+            <button id="close-modal-btn" class="mt-6 w-full bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 font-bold py-2 px-4 rounded-lg">Cerrar</button>
         </div>
     </div>
     
@@ -242,6 +199,7 @@
     <div id="toast" class="fixed bottom-5 right-5 z-50 bg-green-500 text-white py-2 px-5 rounded-lg shadow-lg opacity-0 translate-y-10 transition-all duration-300">
         <p id="toast-message"></p>
     </div>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -273,6 +231,7 @@
             const buyModal = document.getElementById('buy-modal');
             const modalContent = document.getElementById('modal-content');
             const buyBlocksBtn = document.getElementById('buy-blocks-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
             const toastEl = document.getElementById('toast');
             const toastMessageEl = document.getElementById('toast-message');
 
@@ -363,29 +322,35 @@
                 renderMainUserStats();
                 toggleModal(false);
             };
-            
+
             function makeDraggable(element) {
-                let isDragging = false, offsetX, offsetY;
+                let isDragging = false;
+                let offsetX, offsetY;
+
                 function onDragStart(e) {
                     isDragging = true;
                     element.style.transition = 'none';
                     const event = e.type === 'touchstart' ? e.touches[0] : e;
-                    offsetX = event.clientX - element.offsetLeft;
-                    offsetY = event.clientY - element.offsetTop;
+                    offsetX = event.clientX - element.offsetLeft + muralContainerEl.scrollLeft;
+                    offsetY = event.clientY - element.offsetTop + muralContainerEl.scrollTop;
                     element.classList.add('!scale-105', 'z-50');
                 }
+
                 function onDragMove(e) {
                     if (!isDragging) return;
                     e.preventDefault();
                     const event = e.type === 'touchmove' ? e.touches[0] : e;
-                    let newX = event.clientX - offsetX;
-                    let newY = event.clientY - offsetY;
-                    const containerRect = muralContainerEl.getBoundingClientRect();
-                    newX = Math.max(0, Math.min(newX, containerRect.width - element.offsetWidth));
-                    newY = Math.max(0, Math.min(newY, containerRect.height - element.offsetHeight));
+                    let newX = event.clientX - offsetX + muralContainerEl.scrollLeft;
+                    let newY = event.clientY - offsetY + muralContainerEl.scrollTop;
+                    
+                    // Asegurarse de que el bloque no se salga del contenedor
+                    newX = Math.max(0, Math.min(newX, muralContainerEl.scrollWidth - element.offsetWidth));
+                    newY = Math.max(0, Math.min(newY, muralContainerEl.scrollHeight - element.offsetHeight));
+
                     element.style.left = `${newX}px`;
                     element.style.top = `${newY}px`;
                 }
+
                 function onDragEnd() {
                     if (!isDragging) return;
                     isDragging = false;
@@ -399,9 +364,11 @@
                         block.pos.y = element.offsetTop;
                     }
                 }
+
                 element.addEventListener('mousedown', onDragStart);
                 document.addEventListener('mousemove', onDragMove);
                 document.addEventListener('mouseup', onDragEnd);
+                
                 element.addEventListener('touchstart', onDragStart, { passive: false });
                 document.addEventListener('touchmove', onDragMove, { passive: false });
                 document.addEventListener('touchend', onDragEnd);
@@ -418,13 +385,13 @@
                     setTimeout(() => buyModal.classList.add('hidden'), 300);
                 }
             }
-            
+
             function toggleSidebar(show) {
                 if(show) {
-                    sidebar.classList.add('sidebar-visible');
+                    sidebar.classList.remove('sidebar-hidden');
                     sidebarOverlay.classList.remove('hidden');
                 } else {
-                    sidebar.classList.remove('sidebar-visible');
+                    sidebar.classList.add('sidebar-hidden');
                     sidebarOverlay.classList.add('hidden');
                 }
             }
@@ -443,14 +410,16 @@
             
             addCommentForm.addEventListener('submit', handleAddComment);
             buyBlocksBtn.addEventListener('click', () => toggleModal(true));
+            closeModalBtn.addEventListener('click', () => toggleModal(false));
             buyModal.addEventListener('click', (e) => e.target === buyModal && toggleModal(false));
             
             openSidebarBtn.addEventListener('click', () => toggleSidebar(true));
             closeSidebarBtn.addEventListener('click', () => toggleSidebar(false));
             sidebarOverlay.addEventListener('click', () => toggleSidebar(false));
-            
+
             renderApp();
         });
     </script>
 </body>
 </html>
+
