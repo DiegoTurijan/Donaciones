@@ -2,357 +2,455 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página de Donación</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Muro de Bloques - Red Social</title>
     
-    <!-- Tailwind CSS for styling -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts for an elegant look -->
+    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     
-    <!-- QR Code generation library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* Custom styles for the page */
-        body {
-            font-family: 'Lato', sans-serif;
-            background: linear-gradient(135deg, #0f172a, #1e3a8a, #3b82f6);
-        }
-
-        h1, h2, h3 {
-            font-family: 'Playfair Display', serif;
-        }
-        
-        /* The main ticket container styling */
-        .ticket-container {
-            position: relative;
-            width: 100%; /* Make width responsive */
-            max-width: 320px; /* Set a max-width for larger screens */
-            aspect-ratio: 80 / 125; /* Maintain aspect ratio */
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
-            transition: transform 0.3s ease;
-        }
-
-        .ticket-container:hover {
-            transform: scale(1.03);
-        }
-
-        .ticket-svg {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Water filling animation */
-        .water-fill {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: #3b82f6; /* Water color */
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-            height: 0; /* Initial height is 0 */
-            transition: height 1.5s cubic-bezier(0.25, 1, 0.5, 1); /* Smooth transition */
-            clip-path: url(#ticket-clip);
+        /* Estilos personalizados */
+        html, body {
+            overscroll-behavior: none;
             overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            height: 100%;
+            margin: 0;
+            padding: 0;
         }
 
-        .water-fill::before,
-        .water-fill::after {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 20px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 45%;
-            left: -50%;
-            top: -10px;
-            animation: wave 5s linear infinite;
-        }
-
-        .water-fill::after {
-            border-radius: 40%;
-            background-color: rgba(255, 255, 255, 0.3);
-            animation: wave 7s linear infinite;
-            animation-delay: -3s;
-        }
-
-        @keyframes wave {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        /* Content inside the ticket */
-        .ticket-content {
-            position: absolute;
-            top: 0;
-            left: 0;
+        /* Contenedor principal de la app */
+        #app-container {
             width: 100%;
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 10%; /* Use percentage for padding */
-            color: white;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-        }
-        
-        /* Dashed line separator */
-        .separator {
-            width: 80%;
-            border-top: 2px dashed rgba(255, 255, 255, 0.5);
-            margin: 20px 0;
+            background-color: #1f2937; /* bg-gray-800 */
         }
 
-        /* Modal styling */
-        .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
+        #app {
+            flex: 1;
+            overflow: hidden;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-            z-index: 50;
-        }
-
-        .modal-backdrop.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* Final thank you ticket styling */
-        .final-ticket {
-            background: #f1f5f9;
-            color: #1e293b;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 350px;
             position: relative;
-            padding: 2rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            transform: scale(0.9);
-            transition: transform 0.4s ease;
-        }
-        
-        .modal-backdrop.active .final-ticket {
-            transform: scale(1);
         }
 
-        .final-ticket::before,
-        .final-ticket::after {
-            content: '';
+        /* Estilo para los bloques de comentarios */
+        .comment-block {
             position: absolute;
-            width: 20px;
-            height: 20px;
-            background: #1e3a8a;
-            border-radius: 50%;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .final-ticket::before { left: -10px; }
-        .final-ticket::after { right: -10px; }
-        
-        #qr-code {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 2px solid #e2e8f0;
+            padding: 10px;
             border-radius: 8px;
-            padding: 8px;
-            margin-top: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            cursor: grab;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 160px;
+            max-width: 200px;
+            touch-action: none;
         }
 
+        .comment-block:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+            z-index: 50;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .comment-block .author-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .comment-block .author-info img {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 1px solid white;
+        }
+
+        .comment-block p {
+            font-size: 0.85rem;
+            color: white;
+            word-wrap: break-word;
+        }
+
+        /* Colores de los bloques */
+        .bg-block-blue { background-color: #3b82f6; }
+        .bg-block-green { background-color: #22c55e; }
+        .bg-block-purple { background-color: #8b5cf6; }
+        .bg-block-red { background-color: #ef4444; }
+        .bg-block-yellow { background-color: #eab308; }
+        .bg-block-pink { background-color: #ec4899; }
+
+        /* Animación para el modal */
+        .modal-enter { animation: fadeIn 0.3s ease-out forwards; }
+        .modal-leave { animation: fadeOut 0.3s ease-in forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.95); }
+        }
+        
+        /* Estilos para la barra lateral */
+        #sidebar {
+            position: absolute;
+            z-index: 40;
+            width: 16rem; /* 64 */
+            height: 100%;
+            background-color: white;
+            border-right: 1px solid #e5e7eb;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar-visible {
+            transform: translateX(0);
+        }
+
+        /* Mural container */
+        #mural-container {
+            flex: 1;
+            overflow: auto;
+            position: relative;
+            background-color: #e5e7eb;
+        }
+
+        /* Footer */
+        footer {
+            flex-shrink: 0;
+            background-color: white;
+            padding: 0.75rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        /* Header */
+        header {
+            flex-shrink: 0;
+            background-color: white;
+            padding: 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        /* Media queries para desktop */
+        @media (min-width: 768px) {
+            #app-container {
+                max-width: 64rem; /* 1024px */
+                margin: 1rem auto;
+                border-radius: 0.75rem;
+                height: calc(100% - 2rem);
+            }
+            
+            #sidebar {
+                position: relative;
+                transform: translateX(0);
+            }
+        }
     </style>
 </head>
-<body class="min-h-screen w-full flex flex-col items-center justify-center p-4 text-white">
-
-    <main class="w-full max-w-md flex flex-col items-center justify-center text-center space-y-6">
-        <!-- Main Progress Ticket -->
-        <h1 class="text-4xl sm:text-5xl font-bold">Únete a la Causa</h1>
-        <p class="text-base sm:text-lg text-slate-300">Tu donación nos ayuda a alcanzar nuestra meta y hacer una diferencia real.</p>
-        
-        <div class="ticket-container">
-            <!-- SVG for the ticket shape and clip-path -->
-            <svg class="ticket-svg" viewBox="0 0 80 125">
-                <defs>
-                    <clipPath id="ticket-clip">
-                        <path d="M10,0 H70 C75.5,0 80,4.5 80,10 V115 C80,120.5 75.5,125 70,125 H10 C4.5,125 0,120.5 0,115 V10 C0,4.5 4.5,0 10,0 Z M40,55 A5,5 0 0,0 40,65 A5,5 0 0,0 40,55 M0,60 H10 M70,60 H80" />
-                    </clipPath>
-                </defs>
-                <path d="M10,0 H70 C75.5,0 80,4.5 80,10 V55 A5,5 0 0,1 70,60 H10 A5,5 0 0,1 10,55 V10 C0,4.5 4.5,0 10,0 Z" fill="#1e293b" fill-opacity="0.8"/>
-                <path d="M10,65 H70 A5,5 0 0,1 70,70 V115 C80,120.5 75.5,125 70,125 H10 C4.5,125 0,120.5 0,115 V70 A5,5 0 0,1 10,65 Z" fill="#1e293b" fill-opacity="0.8"/>
-            </svg>
-
-            <!-- Animated Water Fill -->
-            <div id="water-fill" class="water-fill"></div>
-
-            <!-- Content Displayed over the ticket -->
-            <div class="ticket-content">
-                <div class="flex flex-col items-center h-1/2 justify-center">
-                    <h2 class="text-5xl sm:text-6xl font-bold" id="percentage-display">0%</h2>
-                    <p class="text-slate-300">alcanzado</p>
+<body class="bg-gray-800">
+    <!-- Contenedor principal -->
+    <div id="app-container">
+        <div id="app">
+            <!-- Barra lateral de perfiles -->
+            <aside id="sidebar" class="dark:bg-gray-800 dark:border-gray-700">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-xl font-bold text-blue-600 dark:text-blue-500 flex items-center gap-2">
+                        <i class="fas fa-cubes"></i> MuroDeBloques
+                    </h1>
+                    <button id="close-sidebar-btn" class="md:hidden text-2xl">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                <div class="separator"></div>
-                <div class="flex flex-col items-center h-1/2 justify-center">
-                    <p class="text-slate-300">Meta</p>
-                    <h3 class="text-3xl sm:text-4xl font-bold">$400</h3>
-                    <p class="mt-2 text-sm text-slate-300">Donado: <span id="donated-amount">$0</span></p>
+                <h2 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-6 mb-3">Perfiles</h2>
+                <div id="profiles-list" class="flex flex-col gap-2 overflow-y-auto flex-grow">
+                    <!-- Los perfiles se insertarán aquí dinámicamente -->
                 </div>
+                <div id="main-user-stats" class="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
+                     <!-- Las estadísticas del usuario principal se insertarán aquí -->
+                </div>
+            </aside>
+
+            <!-- Contenido principal -->
+            <div class="flex-1 flex flex-col h-full overflow-hidden">
+                <header class="dark:bg-gray-800 dark:border-gray-700">
+                    <div class="flex items-center gap-3">
+                        <button id="open-sidebar-btn" class="md:hidden text-xl p-2">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div id="current-profile-header">
+                            <!-- El encabezado del perfil actual se insertará aquí -->
+                        </div>
+                    </div>
+                    <button id="buy-blocks-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 rounded-lg flex items-center gap-2 transition-transform duration-200 hover:scale-105 text-sm">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="hidden sm:inline">Comprar</span>
+                    </button>
+                </header>
+
+                <div id="mural-container" class="dark:bg-gray-900/50">
+                    <!-- Los bloques de comentarios se insertarán aquí -->
+                </div>
+
+                <footer class="dark:bg-gray-800 dark:border-gray-700">
+                    <div class="mb-2">
+                         <label for="comment-input" class="text-sm font-medium text-gray-700 dark:text-gray-300">Deja tu huella en el muro:</label>
+                    </div>
+                    <form id="add-comment-form" class="flex items-stretch gap-2">
+                        <img id="form-user-avatar" src="" class="w-10 h-10 rounded-full self-center" alt="Tu avatar">
+                        <textarea id="comment-input" placeholder="Escribe tu comentario aquí..." rows="1" class="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"></textarea>
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold px-4 rounded-lg flex items-center justify-center gap-2 transition-colors">
+                            <i class="fas fa-plus-circle"></i>
+                            <span class="hidden sm:inline">Añadir</span>
+                        </button>
+                    </form>
+                </footer>
             </div>
-        </div>
-
-        <!-- Donate Button -->
-        <button id="donate-btn" class="bg-amber-400 text-slate-900 font-bold py-3 px-8 rounded-lg text-lg shadow-lg hover:bg-amber-300 transition-all transform hover:scale-105 active:scale-95">
-            Donar Ahora
-        </button>
-    </main>
-
-    <!-- Donation Form Modal -->
-    <div id="donation-modal" class="modal-backdrop">
-        <div class="bg-slate-800 p-8 rounded-xl shadow-2xl w-11/12 max-w-sm flex flex-col space-y-6 relative">
-             <button id="close-donation-modal" class="absolute top-3 right-3 text-slate-400 hover:text-white text-3xl leading-none">&times;</button>
-            <h2 class="text-2xl text-center text-white">Realizar una Donación</h2>
-            <form id="donation-form" class="flex flex-col space-y-4">
-                <div>
-                    <label for="donator-name" class="text-sm text-slate-400">Tu Nombre</label>
-                    <input type="text" id="donator-name" required placeholder="Ej: Juan Pérez" class="w-full bg-slate-700 text-white p-3 rounded-md border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label for="donation-amount" class="text-sm text-slate-400">Cantidad (USD)</label>
-                    <input type="number" id="donation-amount" required placeholder="Ej: 50" min="1" class="w-full bg-slate-700 text-white p-3 rounded-md border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <button type="submit" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-500 transition-colors active:scale-95">
-                    Confirmar Donación
-                </button>
-            </form>
         </div>
     </div>
     
-    <!-- Thank You Ticket Modal -->
-    <div id="ticket-modal" class="modal-backdrop">
-        <div class="final-ticket text-center">
-            <button id="close-ticket-modal" class="absolute top-3 right-4 text-slate-500 hover:text-slate-900 text-3xl font-bold leading-none">&times;</button>
-            <h2 class="text-3xl font-bold text-blue-800">¡Gracias!</h2>
-            <p class="text-slate-600 mt-2">Agradecemos enormemente tu generosa donación.</p>
-            <div class="w-full border-t-2 border-dashed border-slate-300 my-6"></div>
-            <div>
-                <p class="text-sm text-slate-500">DONANTE</p>
-                <p id="ticket-donator-name" class="text-xl font-bold text-slate-800">Juan Pérez</p>
-            </div>
-            <div id="qr-code">
-                 <!-- QR Code will be generated here -->
-            </div>
-            <p class="text-xs text-slate-400 mt-2">Escanea para ver tu mensaje de agradecimiento</p>
+    <!-- Overlay para la barra lateral en móvil -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
+    
+    <!-- Modal para comprar bloques -->
+    <div id="buy-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden p-4">
+        <div id="modal-content" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
+            <!-- Contenido del modal -->
         </div>
+    </div>
+    
+    <!-- Toast de Notificación -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 bg-green-500 text-white py-2 px-5 rounded-lg shadow-lg opacity-0 translate-y-10 transition-all duration-300">
+        <p id="toast-message"></p>
     </div>
 
     <script>
-        // --- DOM Elements ---
-        const donateBtn = document.getElementById('donate-btn');
-        const donationModal = document.getElementById('donation-modal');
-        const closeDonationModalBtn = document.getElementById('close-donation-modal');
-        const donationForm = document.getElementById('donation-form');
-        const ticketModal = document.getElementById('ticket-modal');
-        const closeTicketModalBtn = document.getElementById('close-ticket-modal');
-        
-        const percentageDisplay = document.getElementById('percentage-display');
-        const donatedAmountDisplay = document.getElementById('donated-amount');
-        const waterFill = document.getElementById('water-fill');
-        
-        const ticketDonatorName = document.getElementById('ticket-donator-name');
-        const qrCodeContainer = document.getElementById('qr-code');
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- ESTADO INICIAL DE LA APLICACIÓN ---
+            const state = {
+                mainUserId: 'user1',
+                currentProfileId: 'user1',
+                users: {
+                    'user1': { name: 'Carlos Gomez', avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=256&h=256&fit=crop&ixlib=rb-4.0.3', points: 500, blocksOwned: 10, mural: [ { id: `block-${Date.now()}-1`, authorId: 'user2', text: '¡Qué buena idea tu proyecto! Mucho éxito.', color: 'bg-block-blue', pos: { x: 20, y: 50 } }, { id: `block-${Date.now()}-2`, authorId: 'user3', text: 'Me encanta el diseño de tu mural. ¡Muy minimalista!', color: 'bg-block-purple', pos: { x: 180, y: 150 } } ] },
+                    'user2': { name: 'Ana Fernandez', avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=256&h=256&fit=crop&ixlib=rb-4.0.3', points: 1200, blocksOwned: 50, mural: [ { id: `block-${Date.now()}-3`, authorId: 'user4', text: 'Gracias por la ayuda con el código de ayer.', color: 'bg-block-green', pos: { x: 40, y: 80 } }, { id: `block-${Date.now()}-4`, authorId: 'user1', text: '¡Tenemos que organizar otra salida en grupo!', color: 'bg-block-red', pos: { x: 150, y: 180 } }, { id: `block-${Date.now()}-5`, authorId: 'user3', text: '¿Alguien vio la última película de ciencia ficción?', color: 'bg-block-yellow', pos: { x: 250, y: 60 } } ] },
+                    'user3': { name: 'Sofia Reyes', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=256&h=256&fit=crop&ixlib=rb-4.0.3', points: 850, blocksOwned: 32, mural: [ { id: `block-${Date.now()}-6`, authorId: 'user1', text: 'Tus fotos de paisajes son increíbles.', color: 'bg-block-pink', pos: { x: 100, y: 100 } } ] },
+                    'user4': { name: 'David Lee', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=256&h=256&fit=crop&ixlib=rb-4.0.3', points: 300, blocksOwned: 15, mural: [] }
+                }
+            };
+            const blockColors = ['bg-block-blue', 'bg-block-green', 'bg-block-purple', 'bg-block-red', 'bg-block-yellow', 'bg-block-pink'];
 
-        // --- State ---
-        let totalDonated = 0;
-        const goalAmount = 400;
-        let qrCodeInstance = null; // To hold the QRCode object
+            // --- ELEMENTOS DEL DOM ---
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const openSidebarBtn = document.getElementById('open-sidebar-btn');
+            const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+            const profilesListEl = document.getElementById('profiles-list');
+            const mainUserStatsEl = document.getElementById('main-user-stats');
+            const currentProfileHeaderEl = document.getElementById('current-profile-header');
+            const muralContainerEl = document.getElementById('mural-container');
+            const addCommentForm = document.getElementById('add-comment-form');
+            const commentInput = document.getElementById('comment-input');
+            const formUserAvatar = document.getElementById('form-user-avatar');
+            const buyModal = document.getElementById('buy-modal');
+            const modalContent = document.getElementById('modal-content');
+            const buyBlocksBtn = document.getElementById('buy-blocks-btn');
+            const toastEl = document.getElementById('toast');
+            const toastMessageEl = document.getElementById('toast-message');
 
-        // --- Functions ---
+            // --- FUNCIONES DE RENDERIZADO ---
+            function showToast(message, type = 'success') {
+                toastMessageEl.textContent = message;
+                toastEl.className = toastEl.className.replace(/bg-\w+-500/, type === 'success' ? 'bg-green-500' : 'bg-red-500');
+                toastEl.classList.remove('opacity-0', 'translate-y-10');
+                setTimeout(() => toastEl.classList.add('opacity-0', 'translate-y-10'), 3000);
+            }
 
-        /**
-         * Updates the visual progress on the main ticket.
-         */
-        function updateProgress() {
-            const percentage = Math.min((totalDonated / goalAmount) * 100, 100);
+            function renderProfiles() {
+                profilesListEl.innerHTML = '';
+                for (const userId in state.users) {
+                    const user = state.users[userId];
+                    const isActive = userId === state.currentProfileId;
+                    const profileEl = document.createElement('div');
+                    profileEl.className = `flex items-center p-2 rounded-lg cursor-pointer transition-colors ${isActive ? 'bg-blue-100 dark:bg-blue-900/50' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`;
+                    profileEl.dataset.userId = userId;
+                    profileEl.innerHTML = `<img src="${user.avatar}" alt="${user.name}" class="w-10 h-10 rounded-full mr-3"><span class="font-medium ${isActive ? 'text-blue-600 dark:text-blue-400' : ''}">${user.name}</span>`;
+                    profileEl.addEventListener('click', () => switchProfile(userId));
+                    profilesListEl.appendChild(profileEl);
+                }
+            }
             
-            percentageDisplay.textContent = `${Math.floor(percentage)}%`;
-            donatedAmountDisplay.textContent = `$${totalDonated}`;
-            waterFill.style.height = `${percentage}%`;
-        }
+            function renderMainUserStats() {
+                const mainUser = state.users[state.mainUserId];
+                mainUserStatsEl.innerHTML = `<h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Mis Recursos</h3><div class="text-sm space-y-2"><div class="flex justify-between items-center"><span class="font-medium text-gray-600 dark:text-gray-300">Puntos:</span><span class="font-bold text-green-500">${mainUser.points} <i class="fas fa-star text-yellow-400"></i></span></div><div class="flex justify-between items-center"><span class="font-medium text-gray-600 dark:text-gray-300">Bloques:</span><span class="font-bold text-blue-500">${mainUser.blocksOwned} <i class="fas fa-cube"></i></span></div></div>`;
+                formUserAvatar.src = mainUser.avatar;
+            }
 
-        /**
-         * Generates the thank you ticket with QR code.
-         * @param {string} name - The donor's name.
-         * @param {number} amount - The donation amount.
-         */
-        function generateThankYouTicket(name, amount) {
-            ticketDonatorName.textContent = name;
-            qrCodeContainer.innerHTML = '';
+            function renderMural() {
+                muralContainerEl.innerHTML = '';
+                const currentProfile = state.users[state.currentProfileId];
+                currentProfileHeaderEl.innerHTML = `<div class="flex items-center gap-3"><img src="${currentProfile.avatar}" alt="${currentProfile.name}" class="w-10 h-10 rounded-full"><div class="truncate"><h2 class="text-lg font-bold truncate">${currentProfile.name}</h2><p class="text-xs text-gray-500 dark:text-gray-400">${currentProfile.mural.length} bloques</p></div></div>`;
+                currentProfile.mural.forEach(block => {
+                    const author = state.users[block.authorId];
+                    const blockEl = document.createElement('div');
+                    blockEl.id = block.id;
+                    blockEl.className = `comment-block ${block.color}`;
+                    blockEl.style.left = `${block.pos.x}px`;
+                    blockEl.style.top = `${block.pos.y}px`;
+                    blockEl.innerHTML = `<div class="author-info"><img src="${author.avatar}" alt="${author.name}"><span>${author.name}</span></div><p>${block.text}</p>`;
+                    muralContainerEl.appendChild(blockEl);
+                    makeDraggable(blockEl);
+                });
+            }
 
-            const thankYouMessage = `¡Gracias por tu generosa donación de $${amount}, ${name}! Tu apoyo significa mucho para nosotros.`;
-            qrCodeInstance = new QRCode(qrCodeContainer, {
-                text: thankYouMessage,
-                width: 128,
-                height: 128,
-                colorDark: "#1e293b",
-                colorLight: "#f1f5f9",
-                correctLevel: QRCode.CorrectLevel.H
+            // --- LÓGICA DE LA APLICACIÓN ---
+            function switchProfile(userId) {
+                state.currentProfileId = userId;
+                renderApp();
+                if (window.innerWidth < 768) {
+                    toggleSidebar(false);
+                }
+            }
+
+            function handleAddComment(e) {
+                e.preventDefault();
+                const text = commentInput.value.trim();
+                if (!text) return;
+                const mainUser = state.users[state.mainUserId];
+                if (mainUser.blocksOwned <= 0) {
+                    showToast('¡No tienes bloques! Compra más para comentar.', 'error');
+                    return;
+                }
+                mainUser.blocksOwned--;
+                const newBlock = {
+                    id: `block-${Date.now()}`, authorId: state.mainUserId, text: text, color: blockColors[Math.floor(Math.random() * blockColors.length)],
+                    pos: { x: Math.floor(Math.random() * (muralContainerEl.clientWidth - 180)), y: Math.floor(Math.random() * (muralContainerEl.clientHeight - 80)) }
+                };
+                state.users[state.currentProfileId].mural.push(newBlock);
+                commentInput.value = '';
+                commentInput.style.height = 'auto';
+                renderApp();
+                showToast('¡Bloque añadido con éxito!', 'success');
+            }
+            
+            window.buyBlocks = (amount, cost) => {
+                const mainUser = state.users[state.mainUserId];
+                if (mainUser.points < cost) {
+                    showToast('No tienes suficientes puntos.', 'error');
+                    return;
+                }
+                mainUser.points -= cost;
+                mainUser.blocksOwned += amount;
+                showToast(`¡Compraste ${amount} bloques!`, 'success');
+                renderMainUserStats();
+                toggleModal(false);
+            };
+            
+            function makeDraggable(element) {
+                let isDragging = false, offsetX, offsetY;
+                function onDragStart(e) {
+                    isDragging = true;
+                    element.style.transition = 'none';
+                    const event = e.type === 'touchstart' ? e.touches[0] : e;
+                    offsetX = event.clientX - element.offsetLeft;
+                    offsetY = event.clientY - element.offsetTop;
+                    element.classList.add('!scale-105', 'z-50');
+                }
+                function onDragMove(e) {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const event = e.type === 'touchmove' ? e.touches[0] : e;
+                    let newX = event.clientX - offsetX;
+                    let newY = event.clientY - offsetY;
+                    const containerRect = muralContainerEl.getBoundingClientRect();
+                    newX = Math.max(0, Math.min(newX, containerRect.width - element.offsetWidth));
+                    newY = Math.max(0, Math.min(newY, containerRect.height - element.offsetHeight));
+                    element.style.left = `${newX}px`;
+                    element.style.top = `${newY}px`;
+                }
+                function onDragEnd() {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    element.style.transition = 'transform 0.2s ease, box-shadow 0.2s ease';
+                    element.classList.remove('!scale-105', 'z-50');
+                    const blockId = element.id;
+                    const mural = state.users[state.currentProfileId].mural;
+                    const block = mural.find(b => b.id === blockId);
+                    if (block) {
+                        block.pos.x = element.offsetLeft;
+                        block.pos.y = element.offsetTop;
+                    }
+                }
+                element.addEventListener('mousedown', onDragStart);
+                document.addEventListener('mousemove', onDragMove);
+                document.addEventListener('mouseup', onDragEnd);
+                element.addEventListener('touchstart', onDragStart, { passive: false });
+                document.addEventListener('touchmove', onDragMove, { passive: false });
+                document.addEventListener('touchend', onDragEnd);
+            }
+            
+            function toggleModal(show) {
+                if (show) {
+                    buyModal.classList.remove('hidden');
+                    modalContent.classList.remove('modal-leave');
+                    modalContent.classList.add('modal-enter');
+                } else {
+                    modalContent.classList.remove('modal-enter');
+                    modalContent.classList.add('modal-leave');
+                    setTimeout(() => buyModal.classList.add('hidden'), 300);
+                }
+            }
+            
+            function toggleSidebar(show) {
+                if(show) {
+                    sidebar.classList.add('sidebar-visible');
+                    sidebarOverlay.classList.remove('hidden');
+                } else {
+                    sidebar.classList.remove('sidebar-visible');
+                    sidebarOverlay.classList.add('hidden');
+                }
+            }
+            
+            commentInput.addEventListener('input', () => {
+                commentInput.style.height = 'auto';
+                commentInput.style.height = (commentInput.scrollHeight) + 'px';
             });
+
+            // --- INICIALIZACIÓN ---
+            function renderApp() {
+                renderProfiles();
+                renderMainUserStats();
+                renderMural();
+            }
             
-            ticketModal.classList.add('active');
-        }
-
-        // --- Event Listeners ---
-
-        // Open/close modals
-        donateBtn.addEventListener('click', () => donationModal.classList.add('active'));
-        closeDonationModalBtn.addEventListener('click', () => donationModal.classList.remove('active'));
-        closeTicketModalBtn.addEventListener('click', () => ticketModal.classList.remove('active'));
-        
-        // Allow closing the donation form by clicking the backdrop
-        donationModal.addEventListener('click', (e) => {
-            if (e.target === donationModal) {
-                donationModal.classList.remove('active');
-            }
+            addCommentForm.addEventListener('submit', handleAddComment);
+            buyBlocksBtn.addEventListener('click', () => toggleModal(true));
+            buyModal.addEventListener('click', (e) => e.target === buyModal && toggleModal(false));
+            
+            openSidebarBtn.addEventListener('click', () => toggleSidebar(true));
+            closeSidebarBtn.addEventListener('click', () => toggleSidebar(false));
+            sidebarOverlay.addEventListener('click', () => toggleSidebar(false));
+            
+            renderApp();
         });
-        
-        // NOTE: We have intentionally removed the backdrop click listener for the ticketModal
-        // to prevent it from closing accidentally. The user must click the 'X' button.
-
-        // Handle donation form submission
-        donationForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const nameInput = document.getElementById('donator-name');
-            const amountInput = document.getElementById('donation-amount');
-            const name = nameInput.value.trim();
-            const amount = parseFloat(amountInput.value);
-
-            if (name && amount > 0) {
-                totalDonated += amount;
-                updateProgress();
-                generateThankYouTicket(name, amount);
-                donationForm.reset();
-                donationModal.classList.remove('active');
-            }
-        });
-        
-        // Initial setup
-        updateProgress();
     </script>
 </body>
 </html>
-
-  
