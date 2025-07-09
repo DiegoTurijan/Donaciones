@@ -3,423 +3,290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Muro de Bloques - Red Social</title>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <title>Invitación de Boda - María & Juan</title>
     <style>
-        /* Estilos personalizados */
-        html {
-            font-family: 'Inter', sans-serif;
-            /* ✅ Evita el scroll horizontal, pero permite el vertical */
-            overflow-x: hidden;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Playfair Display', serif;
         }
         
         body {
-             /* Previene el rebote de scroll en algunos dispositivos */
-            overscroll-behavior-y: contain;
+            overflow-x: hidden;
+            background-color: #f9f5f0;
+            color: #333;
         }
-
-        /* Estilo para los bloques de comentarios */
-        .comment-block {
-            position: absolute;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-            cursor: grab;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        
+        .scroller-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            height: 100vh;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .section {
+            min-width: 100vw;
+            height: 100vh;
+            scroll-snap-align: start;
+            padding: 2rem;
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            min-width: 160px;
-            max-width: 200px;
-            touch-action: none; /* Mejora la experiencia táctil */
-        }
-
-        .comment-block:active {
-            cursor: grabbing;
-            transform: scale(1.05);
-            z-index: 50;
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .comment-block .author-info {
-            display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 8px;
-            font-size: 0.7rem;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
         
-        .comment-block .author-info img {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            border: 1px solid white;
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            z-index: 1;
         }
-
-        .comment-block p {
-            font-size: 0.85rem;
+        
+        .section-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
             color: white;
-            word-wrap: break-word;
-        }
-
-        /* Colores de los bloques */
-        .bg-block-blue { background-color: #3b82f6; }
-        .bg-block-green { background-color: #22c55e; }
-        .bg-block-purple { background-color: #8b5cf6; }
-        .bg-block-red { background-color: #ef4444; }
-        .bg-block-yellow { background-color: #eab308; }
-        .bg-block-pink { background-color: #ec4899; }
-
-        /* Animación para el modal */
-        .modal-enter { animation: fadeIn 0.3s ease-out forwards; }
-        .modal-leave { animation: fadeOut 0.3s ease-in forwards; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        @keyframes fadeOut {
-            from { opacity: 1; transform: scale(1); }
-            to { opacity: 0; transform: scale(0.95); }
         }
         
-        /* Estilos para la barra lateral en móviles */
-        #sidebar {
-            transition: transform 0.3s ease-in-out;
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
-        .sidebar-hidden {
-            transform: translateX(-100%);
+        
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .invitation {
+            background: url('https://images.unsplash.com/photo-1523438885200-e635ba2c371e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
+        }
+        
+        .location {
+            background: url('https://images.unsplash.com/photo-1513519245088-0e12902e5a38?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
+        }
+        
+        .church {
+            background: url('https://images.unsplash.com/photo-1535254973040-607b474cb50d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
+        }
+        
+        .food {
+            background: url('https://images.unsplash.com/photo-1547592180-85f173990554?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
+        }
+        
+        .schedule {
+            background: url('https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
+        }
+        
+        .gallery {
+            background: url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #333;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .btn:hover {
+            background-color: white;
+            transform: scale(1.05);
+        }
+        
+        .scroll-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            color: white;
+            font-size: 1.5rem;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0) translateX(-50%);}
+            40% {transform: translateY(-20px) translateX(-50%);}
+            60% {transform: translateY(-10px) translateX(-50%);}
+        }
+        
+        .nav-dots {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .dot.active {
+            background-color: white;
+            transform: scale(1.2);
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-
-    <!-- ✅ Contenedor principal que puede crecer verticalmente -->
-    <div id="app" class="flex w-full relative min-h-screen">
-
-        <!-- Barra lateral de perfiles (adaptable) -->
-        <aside id="sidebar" class="fixed md:sticky top-0 z-40 w-64 h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4 flex-col sidebar-hidden md:flex md:transform-none">
-            <div class="flex justify-between items-center">
-                <h1 class="text-xl font-bold text-blue-600 dark:text-blue-500 flex items-center gap-2">
-                    <i class="fas fa-cubes"></i> MuroDeBloques
-                </h1>
-                <button id="close-sidebar-btn" class="md:hidden text-2xl">
-                    <i class="fas fa-times"></i>
-                </button>
+<body>
+    <div class="scroller-container" id="scroller">
+        <!-- Sección de invitación -->
+        <section class="section invitation">
+            <div class="section-content">
+                <h1>María & Juan</h1>
+                <h2>Evento</h2>
+                <p>Con la bendición de Dios y nuestros padres</p>
+                <p>Tenemos el honor de invitarte a celebrar nuestro matrimonio</p>
+                <p>MUEVE EL DEDO A LA IZQUIERDA</p>
+                <a href="#location" class="btn">Ver detalles</a>
             </div>
-            <h2 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-6 mb-3">Perfiles</h2>
-            <div id="profiles-list" class="flex flex-col gap-2 overflow-y-auto flex-grow">
-                <!-- Los perfiles se insertarán aquí dinámicamente -->
+        </section>
+        
+        <!-- Sección de ubicación -->
+        <section class="section location" id="location">
+            <div class="section-content">
+                <h2>Ubicación</h2>
+                <p>Hacienda Los Pinos</p>
+                <p>Camino Viejo a San Miguel 123</p>
+                <p>Valle de Bravo, Estado de México</p>
+                <p>Estacionamiento disponible</p>
+                <p>Servicio de valet parking</p>
+                <a href="#church" class="btn">Ver ceremonia</a>
             </div>
-            <div id="main-user-stats" class="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
-                 <!-- Las estadísticas del usuario principal se insertarán aquí -->
+        </section>
+        
+        <!-- Sección de la iglesia -->
+        <section class="section church" id="church">
+            <div class="section-content">
+                <h2>Ceremonia Religiosa</h2>
+                <p>Parroquia de Santa María</p>
+                <p>Av. Principal 456, Centro</p>
+                <p>Valle de Bravo</p>
+                <p>4:30 PM - Llegar 15 minutos antes</p>
+                <p>Código de vestimenta: Formal</p>
+                <a href="#food" class="btn">Ver menú</a>
             </div>
-        </aside>
-
-        <!-- Contenido principal (Mural) -->
-        <main class="flex-1 flex flex-col max-h-screen">
-            <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-3 flex justify-between items-center shadow-sm sticky top-0 z-10">
-                <div class="flex items-center gap-3">
-                    <button id="open-sidebar-btn" class="md:hidden text-xl p-2">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <div id="current-profile-header">
-                        <!-- El encabezado del perfil actual se insertará aquí -->
-                    </div>
+        </section>
+        
+        <!-- Sección de comida -->
+        <section class="section food" id="food">
+            <div class="section-content">
+                <h2>Banquete</h2>
+                <h3>Menú de 4 tiempos</h3>
+                <p>Entrada: Ensalada de quinoa con aderezo de mango</p>
+                <p>Plato principal: Filete de res con salsa de vino tinto o salmón a la parrilla</p>
+                <p>Postre: Pastel de tres leches con frutos rojos</p>
+                <p>Bebidas: Barra libre de vinos, cervezas y cócteles signature</p>
+                <a href="#schedule" class="btn">Ver horarios</a>
+            </div>
+        </section>
+        
+        <!-- Sección de horarios -->
+        <section class="section schedule" id="schedule">
+            <div class="section-content">
+                <h2>Horarios</h2>
+                <p>4:00 PM - Recepción en la iglesia</p>
+                <p>4:30 PM - Ceremonia religiosa</p>
+                <p>5:30 PM - Sesión de fotos</p>
+                <p>7:00 PM - Coctel de bienvenida</p>
+                <p>8:00 PM - Banquete</p>
+                <p>10:00 PM - Brindis y pastel</p>
+                <p>11:00 PM - Pista de baile abierta</p>
+                <a href="#gallery" class="btn">Ver galería</a>
+            </div>
+        </section>
+        
+        <!-- Sección de galería -->
+        <section class="section gallery" id="gallery">
+            <div class="section-content">
+                <h2>Nuestros momentos</h2>
+                <p>Compartimos algunas fotos de nuestros lugares especiales</p>
+                <div style="display: flex; overflow-x: auto; padding: 1rem 0; margin: 1rem 0; width: 100%;">
+                    <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Pareja 1" style="height: 200px; margin-right: 10px;">
+                    <img src="https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Pareja 2" style="height: 200px; margin-right: 10px;">
+                    <img src="https://images.unsplash.com/photo-1523438885200-e635ba2c371e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Pareja 3" style="height: 200px; margin-right: 10px;">
+                    <img src="https://images.unsplash.com/photo-1513151233558-d860c5398176?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Pareja 4" style="height: 200px;">
                 </div>
-                <button id="buy-blocks-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 rounded-lg flex items-center gap-2 transition-transform duration-200 hover:scale-105 text-sm">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="hidden sm:inline">Comprar</span>
-                </button>
-            </header>
-
-             <!-- ✅ Contenedor del mural que permite scroll interno -->
-            <div id="mural-container" class="flex-1 bg-gray-200 dark:bg-gray-900/50 overflow-auto relative">
-                <!-- Los bloques de comentarios se insertarán aquí -->
+                <p>¡Esperamos compartir muchos más momentos contigo!</p>
+                <a href="#" class="btn">Confirmar asistencia</a>
             </div>
-
-            <!-- Pie de página para añadir bloques -->
-            <footer class="bg-white dark:bg-gray-800 p-3 border-t border-gray-200 dark:border-gray-700 shadow-inner">
-                <div class="mb-2">
-                     <label for="comment-input" class="text-sm font-medium text-gray-700 dark:text-gray-300">Deja tu huella en el muro:</label>
-                </div>
-                <form id="add-comment-form" class="flex items-stretch gap-2">
-                    <img id="form-user-avatar" src="" class="w-10 h-10 rounded-full self-center" alt="Tu avatar">
-                    <textarea id="comment-input" placeholder="Escribe tu comentario aquí..." rows="1" class="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"></textarea>
-                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold px-4 rounded-lg flex items-center justify-center gap-2 transition-colors">
-                        <i class="fas fa-plus-circle"></i>
-                        <span class="hidden sm:inline">Añadir</span>
-                    </button>
-                </form>
-            </footer>
-        </main>
-
+        </section>
     </div>
     
-    <!-- Overlay para la barra lateral en móvil -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
+    <div class="scroll-indicator">➜</div>
     
-    <!-- Modal para comprar bloques -->
-    <div id="buy-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden p-4">
-        <div id="modal-content" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
-            <h2 class="text-2xl font-bold mb-4">Tienda de Bloques</h2>
-            <p class="text-gray-600 dark:text-gray-300 mb-6">Usa tus puntos para comprar más bloques y seguir comentando.</p>
-            <div class="space-y-4">
-                <div class="flex justify-between items-center p-4 border dark:border-gray-600 rounded-lg">
-                    <div>
-                        <p class="font-semibold">Paquete de 5 Bloques</p>
-                        <p class="text-sm text-green-500 font-bold">Costo: 100 Puntos</p>
-                    </div>
-                    <button onclick="buyBlocks(5, 100)" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Comprar</button>
-                </div>
-                 <div class="flex justify-between items-center p-4 border dark:border-gray-600 rounded-lg">
-                    <div>
-                        <p class="font-semibold">Paquete de 15 Bloques</p>
-                        <p class="text-sm text-green-500 font-bold">Costo: 250 Puntos</p>
-                    </div>
-                    <button onclick="buyBlocks(15, 250)" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Comprar</button>
-                </div>
-            </div>
-            <button id="close-modal-btn" class="mt-6 w-full bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 font-bold py-2 px-4 rounded-lg">Cerrar</button>
-        </div>
+    <div class="nav-dots" id="navDots">
+        <div class="dot active" data-section="0"></div>
+        <div class="dot" data-section="1"></div>
+        <div class="dot" data-section="2"></div>
+        <div class="dot" data-section="3"></div>
+        <div class="dot" data-section="4"></div>
+        <div class="dot" data-section="5"></div>
     </div>
     
-    <!-- Toast de Notificación -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 bg-green-500 text-white py-2 px-5 rounded-lg shadow-lg opacity-0 translate-y-10 transition-all duration-300">
-        <p id="toast-message"></p>
-    </div>
-
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- ESTADO INICIAL DE LA APLICACIÓN ---
-            const state = {
-                mainUserId: 'user1',
-                currentProfileId: 'user1',
-                users: {
-                    'user1': { name: 'Carlos Gomez', avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=256&h=256&fit=crop&ixlib=rb-4.0.3', points: 500, blocksOwned: 10, mural: [ { id: `block-${Date.now()}-1`, authorId: 'user2', text: '¡Qué buena idea tu proyecto! Mucho éxito.', color: 'bg-block-blue', pos: { x: 20, y: 50 } }, { id: `block-${Date.now()}-2`, authorId: 'user3', text: 'Me encanta el diseño de tu mural. ¡Muy minimalista!', color: 'bg-block-purple', pos: { x: 180, y: 150 } } ] },
-                    'user2': { name: 'Ana Fernandez', avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=256&h=256&fit=crop&ixlib=rb-4.0.3', points: 1200, blocksOwned: 50, mural: [ { id: `block-${Date.now()}-3`, authorId: 'user4', text: 'Gracias por la ayuda con el código de ayer.', color: 'bg-block-green', pos: { x: 40, y: 80 } }, { id: `block-${Date.now()}-4`, authorId: 'user1', text: '¡Tenemos que organizar otra salida en grupo!', color: 'bg-block-red', pos: { x: 150, y: 180 } }, { id: `block-${Date.now()}-5`, authorId: 'user3', text: '¿Alguien vio la última película de ciencia ficción?', color: 'bg-block-yellow', pos: { x: 250, y: 60 } } ] },
-                    'user3': { name: 'Sofia Reyes', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=256&h=256&fit=crop&ixlib=rb-4.0.3', points: 850, blocksOwned: 32, mural: [ { id: `block-${Date.now()}-6`, authorId: 'user1', text: 'Tus fotos de paisajes son increíbles.', color: 'bg-block-pink', pos: { x: 100, y: 100 } } ] },
-                    'user4': { name: 'David Lee', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=256&h=256&fit=crop&ixlib=rb-4.0.3', points: 300, blocksOwned: 15, mural: [] }
-                }
-            };
-            const blockColors = ['bg-block-blue', 'bg-block-green', 'bg-block-purple', 'bg-block-red', 'bg-block-yellow', 'bg-block-pink'];
-
-            // --- ELEMENTOS DEL DOM ---
-            const sidebar = document.getElementById('sidebar');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
-            const openSidebarBtn = document.getElementById('open-sidebar-btn');
-            const closeSidebarBtn = document.getElementById('close-sidebar-btn');
-            const profilesListEl = document.getElementById('profiles-list');
-            const mainUserStatsEl = document.getElementById('main-user-stats');
-            const currentProfileHeaderEl = document.getElementById('current-profile-header');
-            const muralContainerEl = document.getElementById('mural-container');
-            const addCommentForm = document.getElementById('add-comment-form');
-            const commentInput = document.getElementById('comment-input');
-            const formUserAvatar = document.getElementById('form-user-avatar');
-            const buyModal = document.getElementById('buy-modal');
-            const modalContent = document.getElementById('modal-content');
-            const buyBlocksBtn = document.getElementById('buy-blocks-btn');
-            const closeModalBtn = document.getElementById('close-modal-btn');
-            const toastEl = document.getElementById('toast');
-            const toastMessageEl = document.getElementById('toast-message');
-
-            // --- FUNCIONES DE RENDERIZADO ---
-            function showToast(message, type = 'success') {
-                toastMessageEl.textContent = message;
-                toastEl.className = toastEl.className.replace(/bg-\w+-500/, type === 'success' ? 'bg-green-500' : 'bg-red-500');
-                toastEl.classList.remove('opacity-0', 'translate-y-10');
-                setTimeout(() => toastEl.classList.add('opacity-0', 'translate-y-10'), 3000);
-            }
-
-            function renderProfiles() {
-                profilesListEl.innerHTML = '';
-                for (const userId in state.users) {
-                    const user = state.users[userId];
-                    const isActive = userId === state.currentProfileId;
-                    const profileEl = document.createElement('div');
-                    profileEl.className = `flex items-center p-2 rounded-lg cursor-pointer transition-colors ${isActive ? 'bg-blue-100 dark:bg-blue-900/50' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`;
-                    profileEl.dataset.userId = userId;
-                    profileEl.innerHTML = `<img src="${user.avatar}" alt="${user.name}" class="w-10 h-10 rounded-full mr-3"><span class="font-medium ${isActive ? 'text-blue-600 dark:text-blue-400' : ''}">${user.name}</span>`;
-                    profileEl.addEventListener('click', () => switchProfile(userId));
-                    profilesListEl.appendChild(profileEl);
-                }
-            }
+        const scroller = document.getElementById('scroller');
+        const dots = document.querySelectorAll('.dot');
+        
+        // Actualizar puntos de navegación al hacer scroll
+        scroller.addEventListener('scroll', () => {
+            const scrollPosition = scroller.scrollLeft;
+            const sectionWidth = window.innerWidth;
+            const currentSection = Math.round(scrollPosition / sectionWidth);
             
-            function renderMainUserStats() {
-                const mainUser = state.users[state.mainUserId];
-                mainUserStatsEl.innerHTML = `<h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Mis Recursos</h3><div class="text-sm space-y-2"><div class="flex justify-between items-center"><span class="font-medium text-gray-600 dark:text-gray-300">Puntos:</span><span class="font-bold text-green-500">${mainUser.points} <i class="fas fa-star text-yellow-400"></i></span></div><div class="flex justify-between items-center"><span class="font-medium text-gray-600 dark:text-gray-300">Bloques:</span><span class="font-bold text-blue-500">${mainUser.blocksOwned} <i class="fas fa-cube"></i></span></div></div>`;
-                formUserAvatar.src = mainUser.avatar;
-            }
-
-            function renderMural() {
-                muralContainerEl.innerHTML = '';
-                const currentProfile = state.users[state.currentProfileId];
-                currentProfileHeaderEl.innerHTML = `<div class="flex items-center gap-3"><img src="${currentProfile.avatar}" alt="${currentProfile.name}" class="w-10 h-10 rounded-full"><div class="truncate"><h2 class="text-lg font-bold truncate">${currentProfile.name}</h2><p class="text-xs text-gray-500 dark:text-gray-400">${currentProfile.mural.length} bloques</p></div></div>`;
-                currentProfile.mural.forEach(block => {
-                    const author = state.users[block.authorId];
-                    const blockEl = document.createElement('div');
-                    blockEl.id = block.id;
-                    blockEl.className = `comment-block ${block.color}`;
-                    blockEl.style.left = `${block.pos.x}px`;
-                    blockEl.style.top = `${block.pos.y}px`;
-                    blockEl.innerHTML = `<div class="author-info"><img src="${author.avatar}" alt="${author.name}"><span>${author.name}</span></div><p>${block.text}</p>`;
-                    muralContainerEl.appendChild(blockEl);
-                    makeDraggable(blockEl);
-                });
-            }
-
-            // --- LÓGICA DE LA APLICACIÓN ---
-            function switchProfile(userId) {
-                state.currentProfileId = userId;
-                renderApp();
-                if (window.innerWidth < 768) {
-                    toggleSidebar(false);
-                }
-            }
-
-            function handleAddComment(e) {
-                e.preventDefault();
-                const text = commentInput.value.trim();
-                if (!text) return;
-                const mainUser = state.users[state.mainUserId];
-                if (mainUser.blocksOwned <= 0) {
-                    showToast('¡No tienes bloques! Compra más para comentar.', 'error');
-                    return;
-                }
-                mainUser.blocksOwned--;
-                const newBlock = {
-                    id: `block-${Date.now()}`, authorId: state.mainUserId, text: text, color: blockColors[Math.floor(Math.random() * blockColors.length)],
-                    pos: { x: Math.floor(Math.random() * (muralContainerEl.clientWidth - 180)), y: Math.floor(Math.random() * (muralContainerEl.clientHeight - 80)) }
-                };
-                state.users[state.currentProfileId].mural.push(newBlock);
-                commentInput.value = '';
-                commentInput.style.height = 'auto';
-                renderApp();
-                showToast('¡Bloque añadido con éxito!', 'success');
-            }
-            
-            window.buyBlocks = (amount, cost) => {
-                const mainUser = state.users[state.mainUserId];
-                if (mainUser.points < cost) {
-                    showToast('No tienes suficientes puntos.', 'error');
-                    return;
-                }
-                mainUser.points -= cost;
-                mainUser.blocksOwned += amount;
-                showToast(`¡Compraste ${amount} bloques!`, 'success');
-                renderMainUserStats();
-                toggleModal(false);
-            };
-
-            function makeDraggable(element) {
-                let isDragging = false;
-                let offsetX, offsetY;
-
-                function onDragStart(e) {
-                    isDragging = true;
-                    element.style.transition = 'none';
-                    const event = e.type === 'touchstart' ? e.touches[0] : e;
-                    offsetX = event.clientX - element.offsetLeft + muralContainerEl.scrollLeft;
-                    offsetY = event.clientY - element.offsetTop + muralContainerEl.scrollTop;
-                    element.classList.add('!scale-105', 'z-50');
-                }
-
-                function onDragMove(e) {
-                    if (!isDragging) return;
-                    e.preventDefault();
-                    const event = e.type === 'touchmove' ? e.touches[0] : e;
-                    let newX = event.clientX - offsetX + muralContainerEl.scrollLeft;
-                    let newY = event.clientY - offsetY + muralContainerEl.scrollTop;
-                    
-                    // Asegurarse de que el bloque no se salga del contenedor
-                    newX = Math.max(0, Math.min(newX, muralContainerEl.scrollWidth - element.offsetWidth));
-                    newY = Math.max(0, Math.min(newY, muralContainerEl.scrollHeight - element.offsetHeight));
-
-                    element.style.left = `${newX}px`;
-                    element.style.top = `${newY}px`;
-                }
-
-                function onDragEnd() {
-                    if (!isDragging) return;
-                    isDragging = false;
-                    element.style.transition = 'transform 0.2s ease, box-shadow 0.2s ease';
-                    element.classList.remove('!scale-105', 'z-50');
-                    const blockId = element.id;
-                    const mural = state.users[state.currentProfileId].mural;
-                    const block = mural.find(b => b.id === blockId);
-                    if (block) {
-                        block.pos.x = element.offsetLeft;
-                        block.pos.y = element.offsetTop;
-                    }
-                }
-
-                element.addEventListener('mousedown', onDragStart);
-                document.addEventListener('mousemove', onDragMove);
-                document.addEventListener('mouseup', onDragEnd);
-                
-                element.addEventListener('touchstart', onDragStart, { passive: false });
-                document.addEventListener('touchmove', onDragMove, { passive: false });
-                document.addEventListener('touchend', onDragEnd);
-            }
-            
-            function toggleModal(show) {
-                if (show) {
-                    buyModal.classList.remove('hidden');
-                    modalContent.classList.remove('modal-leave');
-                    modalContent.classList.add('modal-enter');
+            dots.forEach((dot, index) => {
+                if (index === currentSection) {
+                    dot.classList.add('active');
                 } else {
-                    modalContent.classList.remove('modal-enter');
-                    modalContent.classList.add('modal-leave');
-                    setTimeout(() => buyModal.classList.add('hidden'), 300);
+                    dot.classList.remove('active');
                 }
-            }
-
-            function toggleSidebar(show) {
-                if(show) {
-                    sidebar.classList.remove('sidebar-hidden');
-                    sidebarOverlay.classList.remove('hidden');
-                } else {
-                    sidebar.classList.add('sidebar-hidden');
-                    sidebarOverlay.classList.add('hidden');
-                }
-            }
-            
-            commentInput.addEventListener('input', () => {
-                commentInput.style.height = 'auto';
-                commentInput.style.height = (commentInput.scrollHeight) + 'px';
             });
-
-            // --- INICIALIZACIÓN ---
-            function renderApp() {
-                renderProfiles();
-                renderMainUserStats();
-                renderMural();
-            }
-            
-            addCommentForm.addEventListener('submit', handleAddComment);
-            buyBlocksBtn.addEventListener('click', () => toggleModal(true));
-            closeModalBtn.addEventListener('click', () => toggleModal(false));
-            buyModal.addEventListener('click', (e) => e.target === buyModal && toggleModal(false));
-            
-            openSidebarBtn.addEventListener('click', () => toggleSidebar(true));
-            closeSidebarBtn.addEventListener('click', () => toggleSidebar(false));
-            sidebarOverlay.addEventListener('click', () => toggleSidebar(false));
-
-            renderApp();
+        });
+        
+        // Navegación por puntos
+        dots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const sectionIndex = parseInt(dot.getAttribute('data-section'));
+                scroller.scrollTo({
+                    left: sectionIndex * window.innerWidth,
+                    behavior: 'smooth'
+                });
+            });
         });
     </script>
 </body>
 </html>
-
