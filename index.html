@@ -3,388 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invitación de Boda - María & Juan</title>
+    <title>Mesa de Regalos</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        * {
+        body {
+            background-color: #0a1014;
+            background-image: linear-gradient(rgba(10, 16, 20, 0.3), rgba(10, 16, 20, 0.5)), url('BG.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Playfair Display', serif;
-        }
-        
-        body {
-            overflow-x: hidden;
-            background-color: #f9f5f0;
-            color: #333;
-        }
-        
-        .scroller-container {
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            height: 100vh;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        .section {
-            min-width: 100vw;
-            height: 100vh;
-            scroll-snap-align: start;
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.3);
-            z-index: 1;
-        }
-        
-        .section-content {
-            position: relative;
-            z-index: 2;
-            max-width: 800px;
+            font-family: 'Poppins', sans-serif;
             color: white;
         }
-        
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 1.5rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        
-        h2 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        
-        p {
-            font-size: 1.2rem;
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
-        }
-        
-        .invitation {
-            background: url('https://images.unsplash.com/photo-1523438885200-e635ba2c371e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
-        }
-        
-        .location {
-            background: url('https://images.unsplash.com/photo-1513519245088-0e12902e5a38?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
-        }
-        
-        .church {
-            background: url('https://images.unsplash.com/photo-1535254973040-607b474cb50d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
-        }
-        
-        .food {
-            background: url('https://images.unsplash.com/photo-1547592180-85f173990554?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
-        }
-        
-        .schedule {
-            background: url('https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
-        }
-        
-        .gallery {
-            background: url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
-        }
-        
-        .btn {
-            display: inline-block;
-            padding: 0.8rem 1.5rem;
-            background-color: rgba(255, 255, 255, 0.8);
-            color: #333;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: bold;
+        .nav-button {
             transition: all 0.3s ease;
-            margin-top: 1rem;
-            cursor: pointer;
+            border-bottom: 2px solid transparent;
         }
-        
-        .btn:hover {
-            background-color: white;
-            transform: scale(1.05);
+        .nav-button.active {
+            border-bottom-color: #67e8f9;
+            color: #67e8f9;
         }
-        
-        .scroll-indicator {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            color: white;
-            font-size: 1.5rem;
-            animation: bounce 2s infinite;
+        .nav-button:hover:not(.active) {
+            border-bottom-color: rgba(255, 255, 255, 0.3);
         }
-        
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0) translateX(-50%);}
-            40% {transform: translateY(-20px) translateX(-50%);}
-            60% {transform: translateY(-10px) translateX(-50%);}
+        .content-frame {
+            height: 70vh;
+            background: rgba(20, 30, 40, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
-        .nav-dots {
-            position: fixed;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
+        .loader {
+            border-top-color: #67e8f9;
+            animation: spinner 1.5s linear infinite;
         }
-        
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.5);
-            margin: 8px 0;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .dot.active {
-            background-color: white;
-            transform: scale(1.2);
-        }
-        
-        .fullscreen-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.8);
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 1.2rem;
-        }
-        
-        .welcome-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            color: white;
-            text-align: center;
-            padding: 2rem;
-        }
-        
-        .welcome-overlay h1 {
-            margin-bottom: 2rem;
-        }
-        
-        .welcome-btn {
-            padding: 1rem 2rem;
-            background-color: #fff;
-            color: #333;
-            border: none;
-            border-radius: 30px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            margin-top: 2rem;
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
-    <!-- Overlay de bienvenida -->
-    <div class="welcome-overlay" id="welcomeOverlay">
-        <h1>Invitación de Boda</h1>
-        <p>María & Juan te invitan a celebrar su unión</p>
-        <p>Desliza horizontalmente para ver todos los detalles</p>
-        <button class="welcome-btn" id="enterBtn">Entrar</button>
+<body class="text-white">
+    <div class="container mx-auto max-w-6xl p-4 min-h-screen flex flex-col">
+        <!-- Encabezado -->
+        <header class="text-center py-6">
+            <h1 class="text-4xl font-bold mb-2">Mesa de Regalos</h1>
+            <p class="text-gray-300">Selecciona una opción para ver los detalles</p>
+        </header>
+
+        <!-- Navegación -->
+        <nav class="flex justify-center space-x-6 mb-6">
+            <button onclick="loadContent('amazon')" class="nav-button active px-4 py-2">
+                <i class="ph ph-shopping-cart mr-2"></i>Amazon
+            </button>
+            <button onclick="loadContent('mediafire')" class="nav-button px-4 py-2">
+                <i class="ph ph-cloud-arrow-down mr-2"></i>MediaFire
+            </button>
+            <button onclick="loadContent('curseforge')" class="nav-button px-4 py-2">
+                <i class="ph ph-game-controller mr-2"></i>CurseForge
+            </button>
+        </nav>
+
+        <!-- Contenedor del contenido -->
+        <div class="flex-grow rounded-xl overflow-hidden">
+            <!-- Loader -->
+            <div id="loader" class="hidden flex items-center justify-center content-frame">
+                <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+            </div>
+            
+            <!-- Iframe para Amazon -->
+            <iframe id="amazon-frame" 
+                    src="https://www.amazon.com.mx/registries/gl/guest-view/1D33JHPLGD3TJ?ref_=cm_sw_r_mwn_ggr-subnav-share_KBR2H1MQ2MQ636AWCH47&language=en-US" 
+                    class="content-frame w-full"></iframe>
+            
+            <!-- Iframe para MediaFire -->
+            <iframe id="mediafire-frame" 
+                    src="https://www.mediafire.com/file/rq49aad74cfrcsy" 
+                    class="content-frame w-full hidden"></iframe>
+            
+            <!-- Iframe para CurseForge -->
+            <iframe id="curseforge-frame" 
+                    src="https://www.curseforge.com/minecraft-bedrock/addons/flizers-wither-storm" 
+                    class="content-frame w-full hidden"></iframe>
+        </div>
+
+        <!-- Pie de página -->
+        <footer class="text-center py-6 text-gray-500 text-sm">
+            <p>Gracias por tu generosidad y cariño</p>
+        </footer>
     </div>
 
-    <button class="fullscreen-btn" id="fullscreenBtn">⛶</button>
-    
-    <div class="scroller-container" id="scroller">
-        <!-- Sección de invitación -->
-        <section class="section invitation">
-            <div class="section-content">
-                <h1>María & Juan</h1>
-                <h2>Nos casamos</h2>
-                <p>Con la bendición de Dios y nuestros padres</p>
-                <p>Tenemos el honor de invitarte a celebrar nuestro matrimonio</p>
-                <p>25 de Agosto, 2023</p>
-                <a href="#location" class="btn">Ver detalles</a>
-            </div>
-        </section>
-        
-        <!-- Sección de ubicación -->
-        <section class="section location" id="location">
-            <div class="section-content">
-                <h2>Ubicación</h2>
-                <p>Hacienda Los Pinos</p>
-                <p>Camino Viejo a San Miguel 123</p>
-                <p>Valle de Bravo, Estado de México</p>
-                <p>Estacionamiento disponible</p>
-                <p>Servicio de valet parking</p>
-                <a href="#church" class="btn">Ver ceremonia</a>
-            </div>
-        </section>
-        
-        <!-- Sección de la iglesia -->
-        <section class="section church" id="church">
-            <div class="section-content">
-                <h2>Ceremonia Religiosa</h2>
-                <p>Parroquia de Santa María</p>
-                <p>Av. Principal 456, Centro</p>
-                <p>Valle de Bravo</p>
-                <p>4:30 PM - Llegar 15 minutos antes</p>
-                <p>Código de vestimenta: Formal</p>
-                <a href="#food" class="btn">Ver menú</a>
-            </div>
-        </section>
-        
-        <!-- Sección de comida -->
-        <section class="section food" id="food">
-            <div class="section-content">
-                <h2>Banquete</h2>
-                <h3>Menú de 4 tiempos</h3>
-                <p>Entrada: Ensalada de quinoa con aderezo de mango</p>
-                <p>Plato principal: Filete de res con salsa de vino tinto o salmón a la parrilla</p>
-                <p>Postre: Pastel de tres leches con frutos rojos</p>
-                <p>Bebidas: Barra libre de vinos, cervezas y cócteles signature</p>
-                <a href="#schedule" class="btn">Ver horarios</a>
-            </div>
-        </section>
-        
-        <!-- Sección de horarios -->
-        <section class="section schedule" id="schedule">
-            <div class="section-content">
-                <h2>Horarios</h2>
-                <p>4:00 PM - Recepción en la iglesia</p>
-                <p>4:30 PM - Ceremonia religiosa</p>
-                <p>5:30 PM - Sesión de fotos</p>
-                <p>7:00 PM - Coctel de bienvenida</p>
-                <p>8:00 PM - Banquete</p>
-                <p>10:00 PM - Brindis y pastel</p>
-                <p>11:00 PM - Pista de baile abierta</p>
-                <a href="#gallery" class="btn">Ver galería</a>
-            </div>
-        </section>
-        
-        <!-- Sección de galería -->
-        <section class="section gallery" id="gallery">
-            <div class="section-content">
-                <h2>Nuestros momentos</h2>
-                <p>Compartimos algunas fotos de nuestros lugares especiales</p>
-                <div style="display: flex; overflow-x: auto; padding: 1rem 0; margin: 1rem 0; width: 100%;">
-                    <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Pareja 1" style="height: 200px; margin-right: 10px;">
-                    <img src="https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Pareja 2" style="height: 200px; margin-right: 10px;">
-                    <img src="https://images.unsplash.com/photo-1523438885200-e635ba2c371e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Pareja 3" style="height: 200px; margin-right: 10px;">
-                    <img src="https://images.unsplash.com/photo-1513151233558-d860c5398176?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Pareja 4" style="height: 200px;">
-                </div>
-                <p>¡Esperamos compartir muchos más momentos contigo!</p>
-                <a href="#" class="btn">Confirmar asistencia</a>
-            </div>
-        </section>
-    </div>
-    
-    <div class="scroll-indicator">➜</div>
-    
-    <div class="nav-dots" id="navDots">
-        <div class="dot active" data-section="0"></div>
-        <div class="dot" data-section="1"></div>
-        <div class="dot" data-section="2"></div>
-        <div class="dot" data-section="3"></div>
-        <div class="dot" data-section="4"></div>
-        <div class="dot" data-section="5"></div>
-    </div>
-    
     <script>
-        const scroller = document.getElementById('scroller');
-        const dots = document.querySelectorAll('.dot');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
-        const welcomeOverlay = document.getElementById('welcomeOverlay');
-        const enterBtn = document.getElementById('enterBtn');
-        
-        // Mostrar overlay de bienvenida al cargar
-        document.addEventListener('DOMContentLoaded', () => {
-            welcomeOverlay.style.display = 'flex';
-        });
-        
-        // Al hacer clic en el botón de entrar
-        enterBtn.addEventListener('click', () => {
-            welcomeOverlay.style.display = 'none';
-            // Intentar pantalla completa después de la interacción del usuario
-            toggleFullscreen();
-        });
-        
-        // Actualizar puntos de navegación al hacer scroll
-        scroller.addEventListener('scroll', () => {
-            const scrollPosition = scroller.scrollLeft;
-            const sectionWidth = window.innerWidth;
-            const currentSection = Math.round(scrollPosition / sectionWidth);
+        // Función para cambiar entre contenidos
+        function loadContent(source) {
+            // Mostrar loader
+            document.getElementById('loader').classList.remove('hidden');
+            document.getElementById('amazon-frame').classList.add('hidden');
+            document.getElementById('mediafire-frame').classList.add('hidden');
+            document.getElementById('curseforge-frame').classList.add('hidden');
             
-            dots.forEach((dot, index) => {
-                if (index === currentSection) {
-                    dot.classList.add('active');
-                } else {
-                    dot.classList.remove('active');
-                }
+            // Actualizar botones de navegación
+            document.querySelectorAll('.nav-button').forEach(btn => {
+                btn.classList.remove('active');
             });
-        });
-        
-        // Navegación por puntos
-        dots.forEach(dot => {
-            dot.addEventListener('click', () => {
-                const sectionIndex = parseInt(dot.getAttribute('data-section'));
-                scroller.scrollTo({
-                    left: sectionIndex * window.innerWidth,
-                    behavior: 'smooth'
-                });
-            });
-        });
-        
-        // Función para alternar pantalla completa
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.error(`Error al intentar entrar en pantalla completa: ${err.message}`);
-                });
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
-            }
+            event.target.classList.add('active');
+            
+            // Ocultar loader y mostrar el frame correspondiente después de un breve retraso
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+                document.getElementById(`${source}-frame`).classList.remove('hidden');
+            }, 500);
         }
-        
-        // Botón de pantalla completa
-        fullscreenBtn.addEventListener('click', toggleFullscreen);
-        
-        // Intentar pantalla completa al hacer cualquier clic en la página
-        document.addEventListener('click', function firstInteraction() {
-            // Solo intentar una vez
-            document.removeEventListener('click', firstInteraction);
-            toggleFullscreen();
-        });
+
+        // Cargar Amazon por defecto
+        window.onload = function() {
+            document.getElementById('amazon-frame').classList.remove('hidden');
+        };
     </script>
 </body>
 </html>
